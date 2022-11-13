@@ -4,7 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.trufflear.lambda.mappers.convertInputToDataResponse
 import com.trufflear.lambda.services.SearchIndexService
-import com.trufflear.lambda.triggers.models.TriggerAction
+import com.trufflear.lambda.triggers.models.IndexAction
 import org.typesense.api.Client
 import org.typesense.api.Configuration
 import org.typesense.resources.Node
@@ -35,9 +35,8 @@ open class Handler : RequestHandler<Map<String, String>, String>{
 
         triggerAction?.let { action ->
             when (action) {
-                is TriggerAction.Insert -> searchIndexSerivce.insertPost(action)
-                is TriggerAction.Delete -> searchIndexSerivce.deletePost(action)
-                is TriggerAction.Update -> searchIndexSerivce.updatePost(action)
+                is IndexAction.Upsert -> searchIndexSerivce.upsert(action)
+                is IndexAction.Delete -> searchIndexSerivce.deletePost(action)
             }
         } ?: run {
             val errorMessage = "incorrect trigger data"

@@ -2,15 +2,15 @@ package com.trufflear.lambda.mappers
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger
 import com.trufflear.lambda.configs.TriggerConfigs
-import com.trufflear.lambda.triggers.models.Action
 import com.trufflear.lambda.triggers.models.TriggerAction
+import com.trufflear.lambda.triggers.models.IndexAction
 import java.text.SimpleDateFormat
 
 
 internal fun convertInputToDataResponse(
     input: Map<String, String>,
     logger: LambdaLogger
-): TriggerAction? {
+): IndexAction? {
     val id = input[TriggerConfigs.postId] ?: run {
         logger.log("missing id")
         return null
@@ -25,21 +25,20 @@ internal fun convertInputToDataResponse(
         logger.log("missing action")
         return null
     }
-    val action = Action.values().firstOrNull {it.name == actionString} ?: run {
+    val action = TriggerAction.values().firstOrNull {it.name == actionString} ?: run {
         logger.log("unknown action")
         return null
     }
     logger.log("trigger action is $action")
 
     return when (action) {
-        Action.INSERT, Action.UPDATE -> convertToUpsertAction(
+        TriggerAction.INSERT, TriggerAction.UPDATE -> convertToUpsertAction(
             input = input,
             id = id,
             email = email,
-            logger = logger,
-            action = action
+            logger = logger
         )
-        Action.DELETE -> convertToDeleteAction(
+        TriggerAction.DELETE -> convertToDeleteAction(
             id = id,
             email = email
         )
@@ -50,9 +49,8 @@ private fun convertToUpsertAction(
     id: String,
     email: String,
     logger: LambdaLogger,
-    input: Map<String, String>,
-    action: Action
-): TriggerAction? {
+    input: Map<String, String>
+): IndexAction? {
     val caption = input[TriggerConfigs.caption] ?: run {
         logger.log("missing caption")
         return null
@@ -71,17 +69,6 @@ private fun convertToUpsertAction(
         return null
     }
 
-    if (action == Action.UPDATE) {
-        return TriggerAction.Update(
-            postId = id,
-            email = email,
-            caption = caption,
-            mentions = mentions,
-            hashtags = hashtags,
-            permalink = permalink
-        )
-    }
-
     val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: run {
         logger.log("missing timestamp")
         return null
@@ -92,7 +79,8 @@ private fun convertToUpsertAction(
         return null
     }
 
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
     val result = runCatching {
         dateFormat.parse(createdAtTimeStamp).time
     }.onFailure {
@@ -101,7 +89,7 @@ private fun convertToUpsertAction(
 
     val timeMillis = result.getOrDefault(0L)
 
-    return TriggerAction.Insert(
+    return IndexAction.Upsert(
         postId = id,
         caption = caption,
         thumbnailUrl = thumbnailUrl,
@@ -118,7 +106,7 @@ private fun convertToUpsertAction(
 private fun convertToDeleteAction(
     id: String,
     email: String,
-) = TriggerAction.Delete(
+) = IndexAction.Delete(
         postId = id,
         email = email
     )
