@@ -43,18 +43,6 @@ open class Handler : RequestHandler<Map<String, String>, String>{
 
         triggerResponse?.let { response ->
             val client = getTypeSenseClient()
-            val collectionSchema = CollectionSchema()
-            collectionSchema.name(triggerResponse.email).fields(
-                listOf(
-                    Field().name(TypesenseFields.postId).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.caption).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.thumbnailUrl).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.mentions).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.hashtags).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.permalink).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.createdAtTimeMillis).type(FieldTypes.INT64)
-                )
-            ).defaultSortingField(TypesenseFields.createdAtTimeMillis)
 
             when (response.action) {
                 Action.INSERT -> insertPost(response, client)

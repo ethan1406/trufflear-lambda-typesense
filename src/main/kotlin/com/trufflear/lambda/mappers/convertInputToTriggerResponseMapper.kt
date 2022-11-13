@@ -11,24 +11,54 @@ internal fun convertInputToDataResponse(
     input: Map<String, String>,
     logger: LambdaLogger
 ): TriggerDataResponse? {
-    val id = input[TriggerConfigs.postId] ?: return null
+    val id = input[TriggerConfigs.postId] ?: run {
+        logger.log("missing id")
+        return null
+    }
 
-    val actionString = input[TriggerConfigs.action] ?: return null
-    val action = Action.values().firstOrNull {it.name == actionString} ?: return null
+    val actionString = input[TriggerConfigs.action] ?: run {
+        logger.log("missing action")
+        return null
+    }
+    val action = Action.values().firstOrNull {it.name == actionString} ?: run {
+        logger.log("unknown action")
+        return null
+    }
 
-    val caption = input[TriggerConfigs.caption] ?: return null
-    val thumbnailUrl = input[TriggerConfigs.thumbnailUrl] ?: return null
-    val mentions = input[TriggerConfigs.mentions] ?: return null
-    val hashtags = input[TriggerConfigs.hashtags] ?: return null
-    val permalink = input[TriggerConfigs.permalink] ?: return null
-    val email = input[TriggerConfigs.email] ?: return null
-    val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: return null
+    val caption = input[TriggerConfigs.caption] ?: run {
+        logger.log("missing caption")
+        return null
+    }
+    val thumbnailUrl = input[TriggerConfigs.thumbnailUrl] ?: run {
+        logger.log("missing thumbnail url")
+        return null
+    }
+    val mentions = input[TriggerConfigs.mentions] ?: run {
+        logger.log("missing mentions")
+        return null
+    }
+    val hashtags = input[TriggerConfigs.hashtags] ?: run {
+        logger.log("missing hashtags")
+        return null
+    }
+    val permalink = input[TriggerConfigs.permalink] ?: run {
+        logger.log("missing permalink")
+        return null
+    }
+    val email = input[TriggerConfigs.email] ?: run {
+        logger.log("missing email")
+        return null
+    }
+    val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: run {
+        logger.log("missing timestamp")
+        return null
+    }
 
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     val result = runCatching {
         dateFormat.parse(createdAtTimeStamp).time
     }.onFailure {
-        logger.log("parse data error: $it")
+        logger.log("parse date error: $it")
     }
 
     val timeMillis = result.getOrDefault(0L)
