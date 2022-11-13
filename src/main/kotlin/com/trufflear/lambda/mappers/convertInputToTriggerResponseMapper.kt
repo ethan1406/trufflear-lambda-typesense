@@ -2,6 +2,7 @@ package com.trufflear.lambda.mappers
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger
 import com.trufflear.lambda.configs.TriggerConfigs
+import com.trufflear.lambda.triggers.models.Action
 import com.trufflear.lambda.triggers.models.TriggerDataResponse
 import java.text.SimpleDateFormat
 
@@ -11,6 +12,10 @@ internal fun convertInputToDataResponse(
     logger: LambdaLogger
 ): TriggerDataResponse? {
     val id = input[TriggerConfigs.postId] ?: return null
+
+    val actionString = input[TriggerConfigs.action] ?: return null
+    val action = Action.values().firstOrNull {it.name == actionString} ?: return null
+
     val caption = input[TriggerConfigs.caption] ?: return null
     val thumbnailUrl = input[TriggerConfigs.thumbnailUrl] ?: return null
     val mentions = input[TriggerConfigs.mentions] ?: return null
@@ -30,6 +35,7 @@ internal fun convertInputToDataResponse(
 
     return TriggerDataResponse(
         postId = id,
+        action = action,
         caption = caption,
         thumbnailUrl = thumbnailUrl,
         mentions = mentions,

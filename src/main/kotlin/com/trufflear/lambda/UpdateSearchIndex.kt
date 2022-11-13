@@ -6,6 +6,8 @@ import com.google.gson.GsonBuilder
 import com.trufflear.lambda.configs.TypesenseFields
 import com.trufflear.lambda.configs.apiKey
 import com.trufflear.lambda.mappers.convertInputToDataResponse
+import com.trufflear.lambda.triggers.models.Action
+import com.trufflear.lambda.triggers.models.TriggerDataResponse
 import org.typesense.api.Client
 import org.typesense.api.Configuration
 import org.typesense.api.FieldTypes
@@ -39,7 +41,7 @@ open class Handler : RequestHandler<Map<String, String>, String>{
 
         val triggerResponse = convertInputToDataResponse(input, logger)
 
-        triggerResponse?.let {
+        triggerResponse?.let { response ->
             val client = getTypeSenseClient()
             val collectionSchema = CollectionSchema()
             collectionSchema.name(triggerResponse.email).fields(
@@ -50,11 +52,13 @@ open class Handler : RequestHandler<Map<String, String>, String>{
                     Field().name(TypesenseFields.mentions).type(FieldTypes.STRING),
                     Field().name(TypesenseFields.hashtags).type(FieldTypes.STRING),
                     Field().name(TypesenseFields.permalink).type(FieldTypes.STRING),
-                    Field().name(TypesenseFields.createdAtTimeMilli).type(FieldTypes.INT64)
+                    Field().name(TypesenseFields.createdAtTimeMillis).type(FieldTypes.INT64)
                 )
-            ).defaultSortingField(TypesenseFields.createdAtTimeMilli)
+            ).defaultSortingField(TypesenseFields.createdAtTimeMillis)
 
-            client.collections().create(collectionSchema)
+            when (response.action) {
+                Action.INSERT -> insertPost(response, client)
+            }
         } ?: run {
             val errorMessage = "incorrect trigger data"
             logger.log(errorMessage)
@@ -63,4 +67,22 @@ open class Handler : RequestHandler<Map<String, String>, String>{
 
         return "200 OK"
     }
+
+    private fun insertPost(
+        response: TriggerDataResponse,
+        client: Client
+    ) {
+        val fieldMap = HashMap<String, Any>()
+        fieldMap[TypesenseFields.postId] = response.postId
+        fieldMap[TypesenseFields.caption] = response.caption
+        fieldMap[TypesenseFields.thumbnailUrl] = response.thumbnailUrl
+        fieldMap[TypesenseFields.mentions] = response.mentions
+        fieldMap[TypesenseFields.hashtags] = response.hashtags
+        fieldMap[TypesenseFields.permalink] = response.permalink
+        fieldMap[TypesenseFields.createdAtTimeMillis] = response.createdAtTimeMillis
+
+        client.collections(response.email).documents().create(fieldMap)
+
+    }
+
 }

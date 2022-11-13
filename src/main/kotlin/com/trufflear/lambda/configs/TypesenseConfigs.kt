@@ -10,5 +10,5 @@ internal object TypesenseFields {
     const val mentions = "mentions"
     const val hashtags = "hashtags"
     const val permalink = "permalink"
-    const val createdAtTimeMilli = "created_at_time_milli"
+    const val createdAtTimeMillis = "created_at_time_millis"
 }

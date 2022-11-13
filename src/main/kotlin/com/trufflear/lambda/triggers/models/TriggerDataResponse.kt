@@ -2,6 +2,7 @@ package com.trufflear.lambda.triggers.models
 
 data class TriggerDataResponse(
     val postId: String,
+    val action: Action,
     val caption: String,
     val thumbnailUrl: String,
     val mentions: String,
@@ -10,3 +11,9 @@ data class TriggerDataResponse(
     val email: String,
     val createdAtTimeMillis: Long
 )
+
+enum class Action {
+    INSERT,
+    UPDATE,
+    DELETE;
+}
