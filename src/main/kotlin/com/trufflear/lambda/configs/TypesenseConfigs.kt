@@ -1,8 +1,5 @@
 package com.trufflear.lambda.configs
 
-internal const val apiKey = "KingOysterBoo123!"
-
-
 internal object TypesenseFields {
     const val postId = "id"
     const val caption = "caption"
