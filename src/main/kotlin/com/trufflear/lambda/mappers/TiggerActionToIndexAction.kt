@@ -4,10 +4,10 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger
 import com.trufflear.lambda.configs.TriggerConfigs
 import com.trufflear.lambda.triggers.models.TriggerAction
 import com.trufflear.lambda.triggers.models.IndexAction
-import java.text.SimpleDateFormat
+import com.trufflear.lambda.util.dateFormat
+import java.text.ParseException
 
-
-internal fun convertInputToDataResponse(
+internal fun toIndexAction(
     input: Map<String, String>,
     logger: LambdaLogger
 ): IndexAction? {
@@ -69,25 +69,17 @@ private fun convertToUpsertAction(
         return null
     }
 
-    val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: run {
-        logger.log("missing timestamp")
-        return null
-    }
-
     val thumbnailUrl = input[TriggerConfigs.thumbnailUrl] ?: run {
         logger.log("missing thumbnail url")
         return null
     }
 
-
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-    val result = runCatching {
-        dateFormat.parse(createdAtTimeStamp).time
-    }.onFailure {
-        logger.log("parse date error: $it")
+    val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: run {
+        logger.log("missing timestamp")
+        return null
     }
 
-    val timeMillis = result.getOrDefault(0L)
+    val timeMillis = parseDate(createdAtTimeStamp, logger) ?: 0L
 
     return IndexAction.Upsert(
         postId = id,
@@ -101,8 +93,6 @@ private fun convertToUpsertAction(
     )
 }
 
-
-
 private fun convertToDeleteAction(
     id: String,
     email: String,
@@ -110,3 +100,14 @@ private fun convertToDeleteAction(
         postId = id,
         email = email
     )
+
+private fun parseDate(
+    createdAtTimeStamp: String,
+    logger: LambdaLogger
+): Long? =
+    try {
+        dateFormat.parse(createdAtTimeStamp).time
+    } catch (e: ParseException) {
+        logger.log("parse date error: $e")
+        null
+    }
