@@ -1,13 +1,13 @@
 package com.trufflear.lambda.configs
 
 internal object TriggerConfigs {
-    const val postId = TypesenseFields.postId
+    const val postId = SearchIndexFields.postId
     const val action = "action"
-    const val caption = TypesenseFields.caption
-    const val thumbnailUrl = TypesenseFields.thumbnailUrl
-    const val mentions = TypesenseFields.mentions
-    const val hashtags = TypesenseFields.hashtags
-    const val permalink = TypesenseFields.permalink
+    const val caption = SearchIndexFields.caption
+    const val thumbnailUrl = SearchIndexFields.thumbnailUrl
+    const val mentions = SearchIndexFields.mentions
+    const val hashtags = SearchIndexFields.hashtags
+    const val permalink = SearchIndexFields.permalink
     const val createdAtTimeStamp = "created_at_timestamp"
     const val email = "email"
 }

@@ -1,6 +1,6 @@
 package com.trufflear.lambda.configs
 
-internal object TypesenseFields {
+internal object SearchIndexFields {
     const val postId = "id"
     const val caption = "caption"
     const val thumbnailUrl = "thumbnail_url"

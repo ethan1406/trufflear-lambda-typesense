@@ -1,6 +1,6 @@
 package com.trufflear.lambda.services
 
-import com.trufflear.lambda.configs.TypesenseFields
+import com.trufflear.lambda.configs.SearchIndexFields
 import com.trufflear.lambda.triggers.models.IndexAction
 import org.typesense.api.Client
 
@@ -10,13 +10,13 @@ class SearchIndexService(
 
     fun upsert(insertAction: IndexAction.Upsert) {
         val document = HashMap<String, Any>()
-        document[TypesenseFields.postId] = insertAction.postId
-        document[TypesenseFields.caption] = insertAction.caption
-        document[TypesenseFields.thumbnailUrl] = insertAction.thumbnailUrl
-        document[TypesenseFields.mentions] = insertAction.mentions
-        document[TypesenseFields.hashtags] = insertAction.hashtags
-        document[TypesenseFields.permalink] = insertAction.permalink
-        document[TypesenseFields.createdAtTimeMillis] = insertAction.createdAtTimeMillis
+        document[SearchIndexFields.postId] = insertAction.postId
+        document[SearchIndexFields.caption] = insertAction.caption
+        document[SearchIndexFields.thumbnailUrl] = insertAction.thumbnailUrl
+        document[SearchIndexFields.mentions] = insertAction.mentions
+        document[SearchIndexFields.hashtags] = insertAction.hashtags
+        document[SearchIndexFields.permalink] = insertAction.permalink
+        document[SearchIndexFields.createdAtTimeMillis] = insertAction.createdAtTimeMillis
 
         client.collections(insertAction.email).documents().upsert(document)
     }
