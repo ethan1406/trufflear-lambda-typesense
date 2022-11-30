@@ -15,7 +15,7 @@ BEGIN
                         'permalink', NEW.permalink,
                         'hashtags', NEW.hashtags,
                         'mentions', NEW.mentions,
-                        'thumbnail_url', NEW.thumbnail_url
+                        'thumbnail_object_key', NEW.thumbnail_object_key
                    )
 		   )
     INTO @output;
