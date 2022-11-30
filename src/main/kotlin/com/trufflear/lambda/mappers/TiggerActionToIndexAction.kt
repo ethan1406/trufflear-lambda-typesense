@@ -2,6 +2,7 @@ package com.trufflear.lambda.mappers
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger
 import com.trufflear.lambda.configs.TriggerConfigs
+import com.trufflear.lambda.services.StorageService
 import com.trufflear.lambda.triggers.models.TriggerAction
 import com.trufflear.lambda.triggers.models.IndexAction
 import com.trufflear.lambda.util.dateFormat
@@ -9,6 +10,7 @@ import java.text.ParseException
 
 internal fun toIndexAction(
     input: Map<String, String>,
+    storageService: StorageService,
     logger: LambdaLogger
 ): IndexAction? {
     val id = input[TriggerConfigs.postId] ?: run {
@@ -36,6 +38,7 @@ internal fun toIndexAction(
             input = input,
             id = id,
             email = email,
+            storageService = storageService,
             logger = logger
         )
         TriggerAction.DELETE -> convertToDeleteAction(
@@ -48,6 +51,7 @@ internal fun toIndexAction(
 private fun convertToUpsertAction(
     id: String,
     email: String,
+    storageService: StorageService,
     logger: LambdaLogger,
     input: Map<String, String>
 ): IndexAction? {
@@ -69,10 +73,12 @@ private fun convertToUpsertAction(
         return null
     }
 
-    val thumbnailUrl = input[TriggerConfigs.thumbnailUrl] ?: run {
-        logger.log("missing thumbnail url")
+    val thumbnailObjectKey = input[TriggerConfigs.thumbnailObjectKey] ?: run {
+        logger.log("missing thumbnail object key")
         return null
     }
+
+    val thumbnailUrl = storageService.getUrl(thumbnailObjectKey)
 
     val createdAtTimeStamp = input[TriggerConfigs.createdAtTimeStamp] ?: run {
         logger.log("missing timestamp")
