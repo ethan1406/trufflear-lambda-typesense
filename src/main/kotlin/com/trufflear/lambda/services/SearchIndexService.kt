@@ -8,7 +8,7 @@ class SearchIndexService(
     private val client: Client
 ) {
 
-    fun upsert(insertAction: IndexAction.Upsert) {
+    fun insert(insertAction: IndexAction.Insert) {
         val document = HashMap<String, Any>()
         document[SearchIndexFields.postId] = insertAction.postId
         document[SearchIndexFields.caption] = insertAction.caption
@@ -18,8 +18,18 @@ class SearchIndexService(
         document[SearchIndexFields.permalink] = insertAction.permalink
         document[SearchIndexFields.createdAtTimeMillis] = insertAction.createdAtTimeMillis
 
-        client.collections(insertAction.email).documents().upsert(document)
+        client.collections(insertAction.email).documents().create(document)
     }
+
+    fun update(insertAction: IndexAction.Update) {
+        val document = HashMap<String, Any>()
+        document[SearchIndexFields.caption] = insertAction.caption
+        document[SearchIndexFields.mentions] = insertAction.mentions
+        document[SearchIndexFields.hashtags] = insertAction.hashtags
+
+        client.collections(insertAction.email).documents(insertAction.postId).update(document)
+    }
+
 
     fun deletePost(deleteAction: IndexAction.Delete) {
         client.collections(deleteAction.email).documents(deleteAction.postId).delete()

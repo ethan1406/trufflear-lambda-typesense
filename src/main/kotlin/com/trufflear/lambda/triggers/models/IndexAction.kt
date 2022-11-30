@@ -4,7 +4,7 @@ sealed class IndexAction(
     open val postId: String,
     open val email: String
 ) {
-    data class Upsert(
+    data class Insert(
         override val postId: String,
         override val email: String,
         val caption: String,
@@ -13,6 +13,14 @@ sealed class IndexAction(
         val hashtags: String,
         val permalink: String,
         val createdAtTimeMillis: Long
+    ): IndexAction(postId, email)
+
+    data class Update(
+        override val postId: String,
+        override val email: String,
+        val caption: String,
+        val mentions: String,
+        val hashtags: String,
     ): IndexAction(postId, email)
 
     data class Delete(

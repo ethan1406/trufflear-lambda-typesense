@@ -76,7 +76,7 @@ class TriggerActionToIndexActionTest {
             TriggerConfigs.mentions to "mentions",
             TriggerConfigs.hashtags to "hashtags",
             TriggerConfigs.permalink to "permalink://",
-            TriggerConfigs.thumbnailUrl to "url",
+            TriggerConfigs.thumbnailObjectKey to "url",
             TriggerConfigs.createdAtTimeStamp to timestamp
         )
 
@@ -84,8 +84,8 @@ class TriggerActionToIndexActionTest {
         val indexAction = toIndexAction(map, logger)
 
         // ASSERT
-        assertThat(indexAction is IndexAction.Upsert).isTrue
-        assertThat((indexAction as IndexAction.Upsert).email).isEqualTo(email)
+        assertThat(indexAction is IndexAction.Insert).isTrue
+        assertThat((indexAction as IndexAction.Insert).email).isEqualTo(email)
         assertThat(indexAction.createdAtTimeMillis).isEqualTo(dateFormat.parse(timestamp).time)
     }
 
@@ -102,7 +102,7 @@ class TriggerActionToIndexActionTest {
             TriggerConfigs.mentions to "mentions",
             TriggerConfigs.hashtags to "hashtags",
             TriggerConfigs.permalink to "permalink://",
-            TriggerConfigs.thumbnailUrl to "url",
+            TriggerConfigs.thumbnailObjectKey to "url",
             TriggerConfigs.createdAtTimeStamp to timestamp
         )
 
@@ -110,8 +110,8 @@ class TriggerActionToIndexActionTest {
         val indexAction = toIndexAction(map, logger)
 
         // ASSERT
-        assertThat(indexAction is IndexAction.Upsert).isTrue
-        assertThat((indexAction as IndexAction.Upsert).email).isEqualTo(email)
+        assertThat(indexAction is IndexAction.Insert).isTrue
+        assertThat((indexAction as IndexAction.Insert).email).isEqualTo(email)
         assertThat(indexAction.createdAtTimeMillis).isEqualTo(0L)
     }
 }

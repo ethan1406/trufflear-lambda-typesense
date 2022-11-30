@@ -9,18 +9,23 @@ plugins {
 group "com.trufflear"
 version "1.0-SNAPSHOT"
 
+ext["coroutinesVersion"] = "1.6.4"
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation ("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext["coroutinesVersion"]}")
 
     implementation ("com.google.code.gson:gson:2.10")
 
     implementation ("com.amazonaws:aws-lambda-java-core:1.2.2")
     implementation ("com.amazonaws:aws-lambda-java-events:3.11.0")
     runtimeOnly ("com.amazonaws:aws-lambda-java-log4j2:1.5.1")
+
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.351")
 
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
